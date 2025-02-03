@@ -3,9 +3,9 @@ package repositories;
 import data.interfaces.IDB;
 import models.Booking;
 import repositories.interfaces.IBookingRepository;
-
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,6 +124,44 @@ public class BookingRepository implements IBookingRepository {
             statement.execute(resetSequenceSql);
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean bookRoom(int roomId, LocalDateTime startTime, LocalDateTime endTime) {
+        try (Connection con = db.getConnection()) {
+            String checkAvailabilityQuery = "SELECT * FROM bookings WHERE room_id = ? AND end_time > ?";
+            PreparedStatement checkStmt = con.prepareStatement(checkAvailabilityQuery);
+            checkStmt.setInt(1, roomId);
+            checkStmt.setTimestamp(2, Timestamp.valueOf(startTime));
+            ResultSet rs = checkStmt.executeQuery();
+
+            if (rs.next()) {
+                return false;
+            }
+
+            String bookRoomQuery = "INSERT INTO bookings (room_id, start_time, end_time) VALUES (?, ?, ?)";
+            PreparedStatement bookStmt = con.prepareStatement(bookRoomQuery);
+            bookStmt.setInt(1, roomId);
+            bookStmt.setTimestamp(2, Timestamp.valueOf(startTime));
+            bookStmt.setTimestamp(3, Timestamp.valueOf(endTime));
+            bookStmt.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public void updateRoomStatus() {
+        try (Connection con = db.getConnection()) {
+            String updateStatusQuery = "UPDATE rooms SET status = 'available' WHERE id IN (SELECT room_id FROM bookings WHERE end_time < NOW())";
+            PreparedStatement updateStmt = con.prepareStatement(updateStatusQuery);
+            updateStmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 

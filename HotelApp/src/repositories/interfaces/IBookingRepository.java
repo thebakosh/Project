@@ -3,6 +3,7 @@ package repositories.interfaces;
 import models.Booking;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface IBookingRepository {
@@ -13,4 +14,7 @@ public interface IBookingRepository {
     void resetBookingIdSequence();
     boolean deleteAllBookings();
 
+    boolean bookRoom(int roomId, LocalDateTime startTime, LocalDateTime endTime);
+
+    void updateRoomStatus();
 }
