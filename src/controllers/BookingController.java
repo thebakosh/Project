@@ -7,6 +7,8 @@ import repositories.interfaces.IBookingRepository;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class BookingController implements IBookingController {
     private final IBookingRepository bookingRepository;
@@ -17,42 +19,38 @@ public class BookingController implements IBookingController {
 
     @Override
     public String addBooking(int guestId, int roomId, String checkInDate, String checkOutDate) {
-        Booking booking = new Booking(guestId, roomId, Date.valueOf(checkInDate), Date.valueOf(checkOutDate));
-        boolean created = bookingRepository.createBooking(booking);
-        return created ? "Booking successfully added." : "Failed to add booking.";
+        return bookingRepository.createBooking(new Booking(guestId, roomId, Date.valueOf(checkInDate), Date.valueOf(checkOutDate)))
+                ? "Booking successfully added."
+                : "Failed to add booking.";
     }
 
     @Override
     public String getBookingById(int id) {
-        Booking booking = bookingRepository.getBookingById(id);
-        return booking == null ? "Booking not found." : booking.toString();
+        return Optional.ofNullable(bookingRepository.getBookingById(id))
+                .map(Booking::toString)
+                .orElse("Booking not found.");
     }
 
     @Override
     public String getAllBookings() {
-        List<Booking> bookings = bookingRepository.getAllBookings();
-        if (bookings.isEmpty()) {
-            return "No bookings available.";
-        }
-        StringBuilder response = new StringBuilder();
-        for (Booking booking : bookings) {
-            response.append(booking.toString()).append("\n");
-        }
-        return response.toString();
+        return Optional.ofNullable(bookingRepository.getAllBookings())
+                .filter(bookings -> !bookings.isEmpty())
+                .map(bookings -> bookings.stream()
+                        .map(Booking::toString)
+                        .collect(Collectors.joining("\n")))
+                .orElse("No bookings available.");
     }
+
     @Override
     public String getTotalIncomeForDate(LocalDate date) {
-        double income = bookingRepository.getTotalIncomeForDate(date);
-        return "Total income for " + date + ": " + income + " ₸";
+        return "Total income for " + date + ": " + bookingRepository.getTotalIncomeForDate(date) + " ₸";
     }
 
     @Override
     public String deleteAllBookings() {
-        boolean deleted = bookingRepository.deleteAllBookings();
-        return deleted ? "All bookings were deleted successfully." : "Failed to delete all bookings.";
+        return bookingRepository.deleteAllBookings()
+                ? "All bookings were deleted successfully."
+                : "Failed to delete all bookings.";
     }
-
-
-
 }
 
