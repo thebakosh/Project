@@ -5,6 +5,7 @@ import models.Payment;
 import repositories.interfaces.IPaymentRepository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +35,19 @@ public class PaymentRepository implements IPaymentRepository {
     }
 
     @Override
-    public void resetPaymentIdSequence() {
-        String resetSequenceSql = "SELECT setval('payments_id_seq', 1, false)";
+    public double getTotalIncomeForDate(LocalDate date) {
+        String sql = "SELECT SUM(payment_amount) AS total_income FROM payments WHERE payment_date = ?";
         try (Connection connection = db.getConnection();
-             Statement statement = connection.createStatement()) {
-            statement.execute(resetSequenceSql);
+             PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setDate(1, Date.valueOf(date));
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("total_income");
+            }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
+        return 0.0;
     }
 
     @Override
@@ -105,6 +111,14 @@ public class PaymentRepository implements IPaymentRepository {
         return false;
     }
 
-
+    @Override
+    public void resetPaymentIdSequence() {
+        String resetSequenceSql = "SELECT setval('payments_id_seq', 1, false)";
+        try (Connection connection = db.getConnection();
+             Statement statement = connection.createStatement()) {
+            statement.execute(resetSequenceSql);
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+    }
 }
-
