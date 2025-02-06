@@ -144,7 +144,6 @@ public class RoomRepository implements IRoomRepository {
         }
     }
 
-    // Implement the update method for room
     @Override
     public boolean updateRoomDetails(int roomId, String roomType, double price) {
         String sql = "UPDATE rooms SET room_type = ?, price = ? WHERE id = ?";
@@ -172,8 +171,8 @@ public class RoomRepository implements IRoomRepository {
         try (Connection connection = db.getConnection();
              PreparedStatement st = connection.prepareStatement(sql)) {
             st.setString(1, roomType);
-            st.setDate(2, Date.valueOf(checkOutDate)); // Checking if check-out date overlaps
-            st.setDate(3, Date.valueOf(checkInDate));  // Checking if check-in date overlaps
+            st.setDate(2, Date.valueOf(checkOutDate));
+            st.setDate(3, Date.valueOf(checkInDate));
             st.setDate(4, Date.valueOf(checkInDate));
             st.setDate(5, Date.valueOf(checkOutDate));
             st.setDate(6, Date.valueOf(checkInDate));
