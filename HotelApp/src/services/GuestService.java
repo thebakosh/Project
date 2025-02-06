@@ -5,6 +5,7 @@ import repositories.interfaces.IGuestRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 
 public class GuestService {
     private final IGuestRepository repo;
@@ -14,8 +15,26 @@ public class GuestService {
     }
 
     public String createGuest(String firstName, String lastName, String email, String phoneNumber) {
-        if (!isValidName(firstName) || !isValidName(lastName) || !isValidEmail(email) || !isValidPhoneNumber(phoneNumber)) {
-            return "Invalid guest data provided.";
+        Scanner scanner = new Scanner(System.in);
+
+        while (firstName == null || !isValidName(firstName) || firstName.trim().isEmpty()) {
+            System.out.print("Invalid first name. Enter again: ");
+            firstName = scanner.nextLine();
+        }
+
+        while (lastName == null || !isValidName(lastName) || lastName.trim().isEmpty()) {
+            System.out.print("Invalid last name. Enter again: ");
+            lastName = scanner.nextLine();
+        }
+
+        while (!isValidEmail(email)) {
+            System.out.print("Invalid email format. Enter again: ");
+            email = scanner.nextLine();
+        }
+
+        while (!isValidPhoneNumber(phoneNumber)) {
+            System.out.print("Invalid Kazakhstan phone number format. Enter again: ");
+            phoneNumber = scanner.nextLine();
         }
 
         Guest guest = new Guest(firstName, lastName, email, phoneNumber);
