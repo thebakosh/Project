@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        IDB db = new PostgresDB("jdbc:postgresql://localhost:5432", "postgres", "2109", "hotel_management");
+        IDB db = new PostgresDB("jdbc:postgresql://localhost:5432", "postgres", "0000", "hotel_management");
 
 
         IGuestRepository guestRepository = new GuestRepository(db);
