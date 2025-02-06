@@ -10,7 +10,7 @@ public interface IRoomController {
     String getAllRooms();
     List<String> getRoomTypes();
     List<Room> getAvailableRoomsByType(String roomType);
-    List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate); // ✅ New method
+    List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate);
     String deleteAllRooms();
     boolean updateRoomDetails(int roomId, String roomType, double price);
 }

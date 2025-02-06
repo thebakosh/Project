@@ -7,5 +7,5 @@ public interface IPaymentController {
     String getPaymentById(int id);
     String getAllPayments();
     String deleteAllPayments();
-    String getTotalIncomeForDate(LocalDate date); // Moved from BookingController
+    String getTotalIncomeForDate(LocalDate date);
 }
