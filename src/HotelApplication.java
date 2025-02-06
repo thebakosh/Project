@@ -1,12 +1,10 @@
 import controllers.interfaces.*;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import models.Room;
-
 
 public class HotelApplication {
     private final IGuestController guestController;
@@ -14,6 +12,7 @@ public class HotelApplication {
     private final IBookingController bookingController;
     private final IPaymentController paymentController;
     private final Scanner scanner = new Scanner(System.in);
+    private User currentUser = null;
 
     public HotelApplication(IGuestController guestController, IRoomController roomController,
                             IBookingController bookingController, IPaymentController paymentController) {
@@ -21,11 +20,14 @@ public class HotelApplication {
         this.roomController = roomController;
         this.bookingController = bookingController;
         this.paymentController = paymentController;
+        this.currentUser = currentUser;
     }
+
 
     private void mainMenu() {
         System.out.println();
         System.out.println("Welcome to Hotel Management Application");
+        System.out.println("Logged in as: " + currentUser.getUsername() + " (" + currentUser.getRole() + ")");
         System.out.println("Select one of the following options:");
         System.out.println("1. Manage Guests");
         System.out.println("2. Manage Rooms");
@@ -80,8 +82,20 @@ public class HotelApplication {
                     System.out.print("Enter guest ID: ");
                     System.out.println(guestController.getGuestById(scanner.nextInt()));
                 }
-                case 3 -> addGuest();
-                case 4 -> deleteAllGuests();
+                case 3 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        addGuest();
+                    } else {
+                        System.out.println("You do not have permission to add guests.");
+                    }
+                }
+                case 4 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        deleteAllGuests();
+                    } else {
+                        System.out.println("You do not have permission to delete guests.");
+                    }
+                }
                 default -> System.out.println("Returning to Main Menu...");
             }
         } catch (InputMismatchException e) {
@@ -94,19 +108,43 @@ public class HotelApplication {
         System.out.println("Room Management:");
         System.out.println("1. Get all rooms");
         System.out.println("2. Add new room");
-        System.out.println("3. Get room types");
-        System.out.println("4. Get available rooms by type");
-        System.out.println("5. Delete all rooms");
+        System.out.println("3. Delete all rooms");
+        System.out.println("4. Get room types");
+        System.out.println("5. Get available rooms by type");
+        if (currentUser.getRole().equals("Admin")) {
+            System.out.println("6. Update room details");
+        }
         System.out.println("0. Back to Main Menu");
-        System.out.print("Select an option (0-3): ");
+
+        System.out.print("Select an option (0-6): ");
         try {
             int option = scanner.nextInt();
             switch (option) {
                 case 1 -> System.out.println(roomController.getAllRooms());
-                case 2 -> addRoom();
-                case 5 -> deleteAllRooms();
-                case 3 -> getRoomTypes();
-                case 4 -> getAvailableRoomsByType();
+                case 2 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        addRoom();
+                    } else {
+                        System.out.println("You do not have permission to add rooms.");
+                    }
+                }
+                case 3 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        deleteAllRooms();
+                    } else {
+                        System.out.println("You do not have permission to delete rooms.");
+                    }
+                }
+                case 4 -> getRoomTypes();
+                case 5 -> getAvailableRoomsByType();
+
+                case 6 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        updateRoomDetails();
+                    } else {
+                        System.out.println("You do not have permission to update room details.");
+                    }
+                }
                 default -> System.out.println("Returning to Main Menu...");
             }
         } catch (InputMismatchException e) {
@@ -115,55 +153,44 @@ public class HotelApplication {
         }
     }
 
-    private void getRoomTypes() {
-        List<String> roomTypes = roomController.getRoomTypes();
-        System.out.println("Available room types:");
-        for (int i = 0; i < roomTypes.size(); i++) {
-            System.out.println((i + 1) + ". " + roomTypes.get(i));
-        }
-    }
-    private void getAvailableRoomsByType() {
-        System.out.println("Available room types:");
-        List<String> roomTypes = roomController.getRoomTypes();
-        for (int i = 0; i < roomTypes.size(); i++) {
-            System.out.println((i + 1) + ". " + roomTypes.get(i));
-        }
-
-        System.out.print("Select a room type by number: ");
-        int typeChoice = scanner.nextInt();
-        if (typeChoice < 1 || typeChoice > roomTypes.size()) {
-            System.out.println("Invalid choice!");
-            return;
-        }
-
-        String selectedRoomType = roomTypes.get(typeChoice - 1);
-        List<Room> availableRooms = roomController.getAvailableRoomsByType(selectedRoomType);
-        if (availableRooms.isEmpty()) {
-            System.out.println("No available rooms for this type.");
-        } else {
-            System.out.println("Available rooms:");
-            for (Room room : availableRooms) {
-                System.out.println("Room Number: " + room.getRoomNumber() + ", Price: " + room.getPrice() + " ₸");
-            }
-        }
-    }
-
     private void bookingMenu() {
         System.out.println("Booking Management:");
         System.out.println("1. Get all bookings");
-        System.out.println("2. Add new booking");
-        System.out.println("3. Get total income for a date");
-        System.out.println("4. Delete all bookings");
+        System.out.println("2. Get booking by ID");
+        System.out.println("3. Get full booking details by ID");
+        if (currentUser.getRole().equals("Admin")) {
+            System.out.println("4. Add new booking");
+            System.out.println("5. Delete all bookings");
+        }
         System.out.println("0. Back to Main Menu");
-
-        System.out.print("Select an option (0-4): ");
+        System.out.print("Select an option (0-5): ");
         try {
             int option = scanner.nextInt();
             switch (option) {
                 case 1 -> System.out.println(bookingController.getAllBookings());
-                case 2 -> addBooking();
-                case 3 -> getTotalIncome();
-                case 4 -> deleteAllBookings();
+                case 2 -> {
+                    System.out.print("Enter booking ID: ");
+                    System.out.println(bookingController.getBookingById(scanner.nextInt()));
+                }
+                case 3 -> {
+                    System.out.print("Enter booking ID: ");
+                    int bookingId = scanner.nextInt();
+                    System.out.println(bookingController.getBookingDetailsById(bookingId));
+                }
+                case 4 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        addBooking();
+                    } else {
+                        System.out.println("You do not have permission to add bookings.");
+                    }
+                }
+                case 5 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        deleteAllBookings();
+                    } else {
+                        System.out.println("You do not have permission to delete bookings.");
+                    }
+                }
                 default -> System.out.println("Returning to Main Menu...");
             }
         } catch (InputMismatchException e) {
@@ -175,16 +202,42 @@ public class HotelApplication {
     private void paymentMenu() {
         System.out.println("Payment Management:");
         System.out.println("1. Get all payments");
-        System.out.println("2. Add new payment");
-        System.out.println("3. Delete all payments");
+        System.out.println("2. Get payment by ID");
+        if (currentUser.getRole().equals("Admin")) {
+            System.out.println("3. Add new payment");
+            System.out.println("4. Delete all payments");
+            System.out.println("5. Get total income for a specific date");
+        }
         System.out.println("0. Back to Main Menu");
-        System.out.print("Select an option (0-3): ");
+        System.out.print("Select an option (0-5): ");
         try {
             int option = scanner.nextInt();
             switch (option) {
                 case 1 -> System.out.println(paymentController.getAllPayments());
-                case 2 -> addPayment();
-                case 3 -> deleteAllPayments();
+                case 2 -> {
+                    System.out.print("Enter payment ID: ");
+                    System.out.println(paymentController.getPaymentById(scanner.nextInt()));
+                }
+                case 3 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        addPayment();
+                    } else {
+                        System.out.println("You do not have permission to add payments.");
+                    }
+                }
+                case 4 -> {
+                    if (currentUser.getRole().equals("Admin")) {
+                        deleteAllPayments();
+                    } else {
+                        System.out.println("You do not have permission to delete payments.");
+                    }
+                }
+                case 5 -> {
+                    System.out.print("Enter the date (YYYY-MM-DD): ");
+                    String dateInput = scanner.next();
+                    LocalDate date = LocalDate.parse(dateInput);
+                    System.out.println(paymentController.getTotalIncomeForDate(date));
+                }
                 default -> System.out.println("Returning to Main Menu...");
             }
         } catch (InputMismatchException e) {
