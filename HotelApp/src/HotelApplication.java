@@ -16,12 +16,12 @@ public class HotelApplication {
 
     public HotelApplication(IGuestController guestController, IRoomController roomController,
                             IBookingController bookingController, IPaymentController paymentController,
-                            User currentUser) {  // Add the currentUser parameter here
+                            User currentUser) {
         this.guestController = guestController;
         this.roomController = roomController;
         this.bookingController = bookingController;
         this.paymentController = paymentController;
-        this.currentUser = currentUser;  // Now assign the passed currentUser
+        this.currentUser = currentUser;
     }
 
 
@@ -246,39 +246,93 @@ public class HotelApplication {
             scanner.nextLine();
         }
     }
+
     private void addGuest() {
+        scanner.nextLine();
+
         System.out.print("Enter first name: ");
-        String firstName = scanner.next();
+        String firstName = scanner.nextLine();
+
         System.out.print("Enter last name: ");
-        String lastName = scanner.next();
+        String lastName = scanner.nextLine();
+
         System.out.print("Enter email: ");
-        String email = scanner.next();
+        String email = scanner.nextLine();
+
         System.out.print("Enter phone number: ");
-        String phoneNumber = scanner.next();
-        System.out.println(guestController.createGuest(firstName, lastName, email, phoneNumber));
+        String phoneNumber = scanner.nextLine();
+
+        String result = guestController.createGuest(firstName, lastName, email, phoneNumber);
+        System.out.println(result);
     }
 
     private void addRoom() {
         System.out.print("Enter room number: ");
         int roomNumber = scanner.nextInt();
-        System.out.print("Enter room type: ");
-        String roomType = scanner.next();
+
+        String[] roomTypes = {"Single", "Double", "Deluxe", "Luxury"};
+
+        System.out.println("Select a room type:");
+        for (int i = 0; i < roomTypes.length; i++) {
+            System.out.println((i + 1) + ". " + roomTypes[i]);
+        }
+
+        String roomType;
+        while (true) {
+            System.out.print("Enter your choice (1-4): ");
+            int choice = scanner.nextInt();
+            if (choice >= 1 && choice <= roomTypes.length) {
+                roomType = roomTypes[choice - 1];
+                break;
+            } else {
+                System.out.println("Invalid choice! Please select a valid room type (1-4).");
+            }
+        }
+
         System.out.print("Enter room price: ");
         double price = scanner.nextDouble();
+
         System.out.println(roomController.addRoom(roomNumber, roomType, price));
     }
+
 
     private void addBooking() {
         System.out.print("Enter guest ID: ");
         int guestId = scanner.nextInt();
 
-        System.out.print("Enter check-in date (YYYY-MM-DD): ");
-        String checkInDateStr = scanner.next();
-        LocalDate checkInDate = LocalDate.parse(checkInDateStr);
+        LocalDate checkInDate;
+        while (true) {
+            System.out.print("Enter check-in date (YYYY-MM-DD): ");
+            String checkInDateStr = scanner.next();
 
-        System.out.print("Enter check-out date (YYYY-MM-DD): ");
-        String checkOutDateStr = scanner.next();
-        LocalDate checkOutDate = LocalDate.parse(checkOutDateStr);
+            try {
+                checkInDate = LocalDate.parse(checkInDateStr);
+                if (!checkInDate.isBefore(LocalDate.now())) {
+                    break;
+                } else {
+                    System.out.println("Invalid check-in date! The check-in date cannot be in the past.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid date format! Please enter the date in YYYY-MM-DD format.");
+            }
+        }
+
+        LocalDate checkOutDate;
+        while (true) {
+            System.out.print("Enter check-out date (YYYY-MM-DD): ");
+            String checkOutDateStr = scanner.next();
+
+            try {
+                checkOutDate = LocalDate.parse(checkOutDateStr);
+                if (checkOutDate.isAfter(checkInDate)) {
+                    break;
+                } else {
+                    System.out.println("Invalid check-out date! It must be after the check-in date.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid date format! Please enter the date in YYYY-MM-DD format.");
+            }
+        }
 
         System.out.println("Available room types:");
         List<String> roomTypes = roomController.getRoomTypes();
@@ -308,9 +362,8 @@ public class HotelApplication {
         int roomChoice = scanner.nextInt();
         int roomId = availableRooms.get(roomChoice - 1).getId();
 
-        System.out.println(bookingController.addBooking(guestId, roomId, checkInDateStr, checkOutDateStr));
+        System.out.println(bookingController.addBooking(guestId, roomId, checkInDate.toString(), checkOutDate.toString()));
     }
-
 
     private void addPayment() {
         System.out.print("Enter booking ID: ");
