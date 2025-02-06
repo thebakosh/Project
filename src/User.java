@@ -15,4 +15,3 @@ public class User {
         return role;
     }
 }
-

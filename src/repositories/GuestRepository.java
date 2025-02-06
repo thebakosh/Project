@@ -112,8 +112,4 @@ public class GuestRepository implements IGuestRepository {
             System.out.println("SQL error: " + e.getMessage());
         }
     }
-
-
 }
-
-

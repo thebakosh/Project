@@ -1,8 +1,6 @@
 package repositories.interfaces;
 
 import models.Booking;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public interface IBookingRepository {

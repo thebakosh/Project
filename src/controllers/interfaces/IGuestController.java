@@ -5,5 +5,4 @@ public interface IGuestController {
     String getGuestById(int id);
     String getAllGuests();
     String deleteAllGuests();
-
 }

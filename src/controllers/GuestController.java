@@ -5,8 +5,7 @@ import models.Guest;
 import repositories.interfaces.IGuestRepository;
 
 import java.util.List;
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.Scanner;
 
 public class GuestController implements IGuestController {
     private final IGuestRepository repo;
@@ -14,48 +13,71 @@ public class GuestController implements IGuestController {
     public GuestController(IGuestRepository repo) {
         this.repo = repo;
     }
-
     @Override
     public String createGuest(String firstName, String lastName, String email, String phoneNumber) {
-        if (Arrays.stream(new String[]{firstName, lastName, email, phoneNumber})
-                .anyMatch(field -> field == null || field.trim().isEmpty())) {
-            return "All fields are required. Please provide valid data.";
+        Scanner scanner = new Scanner(System.in);
+
+        while (firstName == null || !isValidName(firstName)|| firstName.trim().isEmpty()) {
+            System.out.print("Invalid first name. Enter again: ");
+            firstName = scanner.nextLine();
         }
 
-        if (!isValidEmail(email)) return "Invalid email format.";
-        if (!isValidPhoneNumber(phoneNumber)) return "Phone number should only contain digits.";
+        while (lastName == null || !isValidName(lastName)|| lastName.trim().isEmpty()) {
+            System.out.print("Invalid last name. Enter again: ");
+            lastName = scanner.nextLine();
+        }
 
-        return repo.createGuest(new Guest(firstName, lastName, email, phoneNumber))
-                ? "Guest was created successfully."
-                : "Guest creation failed.";
+        while (!isValidEmail(email)) {
+            System.out.print("Invalid email format. Enter again: ");
+            email = scanner.nextLine();
+        }
+
+        while (!isValidPhoneNumber(phoneNumber)) {
+            System.out.print("Invalid Kazakhstan phone number format. Enter again: ");
+            phoneNumber = scanner.nextLine();
+        }
+
+        Guest guest = new Guest(firstName, lastName, email, phoneNumber);
+        boolean created = repo.createGuest(guest);
+
+        return created ? "Guest was created successfully." : "Guest creation failed.";
     }
 
+    private boolean isValidName(String name) {
+        if (!name.matches("^[A-Za-zА-Яа-яЁё\\s-]+$")) {
+            System.out.println("Invalid name! Only letters, spaces, or hyphens are allowed.");
+            return false;
+        }
+        return true;
+    }
     private boolean isValidEmail(String email) {
-        return email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email.matches(emailRegex);
     }
 
     private boolean isValidPhoneNumber(String phoneNumber) {
-        return phoneNumber.matches("\\d+");
+        return phoneNumber.matches("^(\\+7|8)(7\\d{2}|3\\d{2})\\d{7}$") ||
+                phoneNumber.matches("^(\\+7|8)\\s?(7\\d{2}|3\\d{2})\\s?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$");
     }
 
     @Override
     public String getGuestById(int id) {
-        return Optional.ofNullable(repo.getGuestById(id))
-                .map(Guest::toString)
-                .orElse("Guest was not found.");
+        Guest guest = repo.getGuestById(id);
+        return (guest == null) ? "Guest was not found" : guest.toString();
     }
 
     @Override
     public String getAllGuests() {
-        return repo.getAllGuests().stream()
-                .map(Guest::toString)
-                .reduce((g1, g2) -> g1 + "\n" + g2)
-                .orElse("No guests found.");
+        List<Guest> guests = repo.getAllGuests();
+        StringBuilder responce = new StringBuilder();
+        for (Guest guest : guests) {
+            responce.append(guest.toString()).append("\n");
+        }
+        return responce.toString();
     }
-
     @Override
     public String deleteAllGuests() {
-        return repo.deleteAllGuests() ? "All guests were deleted successfully."
-                : "Failed to delete all guests.";
+        boolean deleted = repo.deleteAllGuests();
+        return deleted ? "All guests were deleted successfully." : "Failed to delete all guests.";
     }
 }

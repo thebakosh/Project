@@ -53,5 +53,3 @@ public class PaymentController implements IPaymentController {
         return "Total income for " + date + ": " + income + " ₸";
     }
 }
-
-
