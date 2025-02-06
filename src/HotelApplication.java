@@ -247,28 +247,23 @@ public class HotelApplication {
         }
     }
 
-    private void deleteAllPayments() {
-        System.out.print("Are you sure you want to delete all payments? (yes/no): ");
-        String confirmation = scanner.next();
-        if (confirmation.equalsIgnoreCase("yes")) {
-            System.out.println(paymentController.deleteAllPayments());
-        } else {
-            System.out.println("Operation cancelled.");
-        }
-    }
-
-
-
     private void addGuest() {
+        scanner.nextLine();
+
         System.out.print("Enter first name: ");
-        String firstName = scanner.next();
+        String firstName = scanner.nextLine();
+
         System.out.print("Enter last name: ");
-        String lastName = scanner.next();
+        String lastName = scanner.nextLine();
+
         System.out.print("Enter email: ");
-        String email = scanner.next();
+        String email = scanner.nextLine();
+
         System.out.print("Enter phone number: ");
-        String phoneNumber = scanner.next();
-        System.out.println(guestController.createGuest(firstName, lastName, email, phoneNumber));
+        String phoneNumber = scanner.nextLine();
+
+        String result = guestController.createGuest(firstName, lastName, email, phoneNumber);
+        System.out.println(result);
     }
 
     private void addRoom() {
