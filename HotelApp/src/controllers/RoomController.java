@@ -64,5 +64,4 @@ public class RoomController implements IRoomController {
     public List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate) {
         return repo.getAvailableRoomsByTypeAndDate(roomType, checkInDate, checkOutDate);
     }
-
 }
