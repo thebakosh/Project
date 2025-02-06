@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 public class PaymentController implements IPaymentController {
     private final IPaymentRepository paymentRepository;
@@ -46,6 +47,12 @@ public class PaymentController implements IPaymentController {
                 ? "All payments were deleted successfully."
                 : "Failed to delete all payments.";
     }
+    @Override
+    public String getTotalIncomeForDate(LocalDate date) {
+        double income = paymentRepository.getTotalIncomeForDate(date);
+        return "Total income for " + date + ": " + income + " ₸";
+    }
 }
+
 
 

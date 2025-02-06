@@ -1,7 +1,7 @@
 package repositories.interfaces;
 
 import models.Payment;
-
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IPaymentRepository {
@@ -10,6 +10,5 @@ public interface IPaymentRepository {
     List<Payment> getAllPayments();
     boolean deleteAllPayments();
     void resetPaymentIdSequence();
-
+    double getTotalIncomeForDate(LocalDate date);
 }
-

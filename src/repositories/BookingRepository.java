@@ -80,26 +80,6 @@ public class BookingRepository implements IBookingRepository {
         return bookings;
     }
     @Override
-    public double getTotalIncomeForDate(LocalDate date) {
-        String sql = "SELECT SUM(rooms.price) AS total_income " +
-                "FROM bookings " +
-                "JOIN rooms ON bookings.room_id = rooms.id " +
-                "WHERE ? BETWEEN bookings.check_in_date AND bookings.check_out_date";
-
-        try (Connection connection = db.getConnection();
-             PreparedStatement st = connection.prepareStatement(sql)) {
-            st.setDate(1, Date.valueOf(date));
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
-                return rs.getDouble("total_income");
-            }
-        } catch (SQLException e) {
-            System.out.println("SQL error: " + e.getMessage());
-        }
-        return 0.0;
-    }
-
-    @Override
     public boolean deleteAllBookings() {
         String deleteSql = "DELETE FROM bookings";
         try (Connection connection = db.getConnection();
@@ -127,6 +107,65 @@ public class BookingRepository implements IBookingRepository {
         }
     }
 
+    @Override
+    public String getBookingDetailsById(int bookingId) {
+        String sql = "SELECT " +
+                "b.id AS booking_id, " +
+                "g.id AS guest_id, " +
+                "g.first_Name AS guest_first_name, " +
+                "g.last_Name AS guest_last_name, " +
+                "g.email AS guest_email, " +
+                "g.phone_Number AS guest_phone_number, " +
+                "r.id AS room_id, " +
+                "r.room_number AS room_number, " +
+                "r.room_type AS room_type, " +
+                "r.price AS room_price, " +
+                "b.check_In_Date AS check_in_date, " +
+                "b.check_Out_Date AS check_out_date, " +
+                "p.id AS payment_id, " +
+                "p.payment_Amount AS payment_amount, " +
+                "p.payment_Date AS payment_date " +
+                "FROM bookings b " +
+                "JOIN guests g ON b.guest_Id = g.id " +
+                "JOIN rooms r ON b.room_Id = r.id " +
+                "LEFT JOIN payments p ON b.id = p.booking_Id " +
+                "WHERE b.id = ?";
+
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, bookingId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String bookingDetails = String.format("Booking ID: %d\n" +
+                                    "Guest ID: %d, Name: %s %s, Email: %s, Phone: %s\n" +
+                                    "Room ID: %d, Room Number: %s, Room Type: %s, Room Price: %.2f\n" +
+                                    "Check-in Date: %s, Check-out Date: %s\n" +
+                                    "Payment ID: %d, Amount: %.2f, Payment Date: %s",
+                            rs.getInt("booking_id"),
+                            rs.getInt("guest_id"),
+                            rs.getString("guest_first_name"),
+                            rs.getString("guest_last_name"),
+                            rs.getString("guest_email"),
+                            rs.getString("guest_phone_number"),
+                            rs.getInt("room_id"),
+                            rs.getString("room_number"),
+                            rs.getString("room_type"),
+                            rs.getDouble("room_price"),
+                            rs.getDate("check_in_date"),
+                            rs.getDate("check_out_date"),
+                            rs.getInt("payment_id"),
+                            rs.getDouble("payment_amount"),
+                            rs.getDate("payment_date")
+                    );
+                    return bookingDetails;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return "Booking not found.";
+    }
 }
 
 

@@ -42,15 +42,16 @@ public class BookingController implements IBookingController {
     }
 
     @Override
-    public String getTotalIncomeForDate(LocalDate date) {
-        return "Total income for " + date + ": " + bookingRepository.getTotalIncomeForDate(date) + " ₸";
-    }
-
-    @Override
     public String deleteAllBookings() {
         return bookingRepository.deleteAllBookings()
                 ? "All bookings were deleted successfully."
                 : "Failed to delete all bookings.";
     }
+    @Override
+    public String getBookingDetailsById(int bookingId) {
+        return bookingRepository.getBookingDetailsById(bookingId);
+    }
+
 }
+
 
