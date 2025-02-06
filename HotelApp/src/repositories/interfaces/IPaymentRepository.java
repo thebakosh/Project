@@ -10,5 +10,5 @@ public interface IPaymentRepository {
     List<Payment> getAllPayments();
     boolean deleteAllPayments();
     void resetPaymentIdSequence();
-    double getTotalIncomeForDate(LocalDate date); // Moved from BookingRepository
+    double getTotalIncomeForDate(LocalDate date);
 }

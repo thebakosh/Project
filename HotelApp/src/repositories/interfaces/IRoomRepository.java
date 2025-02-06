@@ -11,7 +11,7 @@ public interface IRoomRepository {
     boolean deleteAllRooms();
     List<String> getRoomTypes();
     List<Room> getAvailableRoomsByType(String roomType);
-    List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate); // ✅ New method
+    List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate);
 
     void resetRoomIdSequence();
 
