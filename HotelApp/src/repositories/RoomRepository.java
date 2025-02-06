@@ -5,6 +5,7 @@ import models.Room;
 import repositories.interfaces.IRoomRepository;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +77,6 @@ public class RoomRepository implements IRoomRepository {
         return rooms;
     }
 
-
     @Override
     public boolean deleteAllRooms() {
         String deleteSql = "DELETE FROM rooms";
@@ -108,6 +108,7 @@ public class RoomRepository implements IRoomRepository {
         }
         return roomTypes;
     }
+
     @Override
     public List<Room> getAvailableRoomsByType(String roomType) {
         String sql = "SELECT * FROM rooms WHERE room_type = ? AND id NOT IN " +
@@ -143,6 +144,54 @@ public class RoomRepository implements IRoomRepository {
         }
     }
 
+    // Implement the update method for room
+    @Override
+    public boolean updateRoomDetails(int roomId, String roomType, double price) {
+        String sql = "UPDATE rooms SET room_type = ?, price = ? WHERE id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, roomType);
+            st.setDouble(2, price);
+            st.setInt(3, roomId);
+            int rowsAffected = st.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
+    }
+    @Override
+    public List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate) {
+        String sql = "SELECT * FROM rooms WHERE room_type = ? " +
+                "AND id NOT IN (SELECT room_id FROM bookings " +
+                "WHERE (check_in_date <= ? AND check_out_date >= ?) " +
+                "OR (check_in_date <= ? AND check_out_date >= ?) " +
+                "OR (check_in_date >= ? AND check_out_date <= ?))";
+
+        List<Room> availableRooms = new ArrayList<>();
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, roomType);
+            st.setDate(2, Date.valueOf(checkOutDate)); // Checking if check-out date overlaps
+            st.setDate(3, Date.valueOf(checkInDate));  // Checking if check-in date overlaps
+            st.setDate(4, Date.valueOf(checkInDate));
+            st.setDate(5, Date.valueOf(checkOutDate));
+            st.setDate(6, Date.valueOf(checkInDate));
+            st.setDate(7, Date.valueOf(checkOutDate));
+
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                availableRooms.add(new Room(
+                        rs.getInt("id"),
+                        rs.getInt("room_number"),
+                        rs.getString("room_type"),
+                        rs.getDouble("price")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return availableRooms;
+    }
+
 }
-
-
