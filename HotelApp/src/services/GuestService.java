@@ -9,14 +9,13 @@ import java.util.Scanner;
 
 public class GuestService {
     private final IGuestRepository repo;
+    private final Scanner scanner = new Scanner(System.in);
 
     public GuestService(IGuestRepository repo) {
         this.repo = repo;
     }
 
     public String createGuest(String firstName, String lastName, String email, String phoneNumber) {
-        Scanner scanner = new Scanner(System.in);
-
         while (firstName == null || !isValidName(firstName) || firstName.trim().isEmpty()) {
             System.out.print("Invalid first name. Enter again: ");
             firstName = scanner.nextLine();
@@ -27,13 +26,21 @@ public class GuestService {
             lastName = scanner.nextLine();
         }
 
-        while (!isValidEmail(email)) {
-            System.out.print("Invalid email format. Enter again: ");
+        while (!isValidEmail(email) || repo.isEmailExists(email)) {
+            if (repo.isEmailExists(email)) {
+                System.out.print("Email already exists. Enter a different email: ");
+            } else {
+                System.out.print("Invalid email format. Enter again: ");
+            }
             email = scanner.nextLine();
         }
 
-        while (!isValidPhoneNumber(phoneNumber)) {
-            System.out.print("Invalid Kazakhstan phone number format. Enter again: ");
+        while (!isValidPhoneNumber(phoneNumber) || repo.isPhoneNumberExists(phoneNumber)) {
+            if (repo.isPhoneNumberExists(phoneNumber)) {
+                System.out.print("Phone number already exists. Enter a different phone number: ");
+            } else {
+                System.out.print("Invalid Kazakhstan phone number format. Enter again: ");
+            }
             phoneNumber = scanner.nextLine();
         }
 
