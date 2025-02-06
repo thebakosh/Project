@@ -9,8 +9,7 @@ public interface IBookingRepository {
     boolean createBooking(Booking booking);
     Booking getBookingById(int id);
     List<Booking> getAllBookings();
-    double getTotalIncomeForDate(LocalDate date);
     void resetBookingIdSequence();
     boolean deleteAllBookings();
-
+    String getBookingDetailsById(int bookingId);
 }
