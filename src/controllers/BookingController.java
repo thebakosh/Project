@@ -2,53 +2,43 @@ package controllers;
 
 import controllers.interfaces.IBookingController;
 import models.Booking;
-import repositories.interfaces.IBookingRepository;
-
-import java.sql.Date;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import services.BookingService;
 
 public class BookingController implements IBookingController {
-    private final IBookingRepository bookingRepository;
+    private final BookingService bookingService;
 
-    public BookingController(IBookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
+    public BookingController(BookingService bookingService) {
+        this.bookingService = bookingService;
     }
 
     @Override
     public String addBooking(int guestId, int roomId, String checkInDate, String checkOutDate) {
-        return bookingRepository.createBooking(new Booking(guestId, roomId, Date.valueOf(checkInDate), Date.valueOf(checkOutDate)))
+        return bookingService.addBooking(guestId, roomId, checkInDate, checkOutDate)
                 ? "Booking successfully added."
                 : "Failed to add booking.";
     }
 
     @Override
     public String getBookingById(int id) {
-        return Optional.ofNullable(bookingRepository.getBookingById(id))
+        return bookingService.getBookingById(id)
                 .map(Booking::toString)
                 .orElse("Booking not found.");
     }
 
     @Override
     public String getAllBookings() {
-        return Optional.ofNullable(bookingRepository.getAllBookings())
-                .filter(bookings -> !bookings.isEmpty())
-                .map(bookings -> bookings.stream()
-                        .map(Booking::toString)
-                        .collect(Collectors.joining("\n")))
-                .orElse("No bookings available.");
+        return bookingService.getAllBookings();
     }
 
     @Override
     public String deleteAllBookings() {
-        return bookingRepository.deleteAllBookings()
+        return bookingService.deleteAllBookings()
                 ? "All bookings were deleted successfully."
                 : "Failed to delete all bookings.";
     }
+
     @Override
     public String getBookingDetailsById(int bookingId) {
-        return bookingRepository.getBookingDetailsById(bookingId);
+        return bookingService.getBookingDetailsById(bookingId);
     }
-
 }
-
