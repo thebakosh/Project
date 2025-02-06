@@ -2,66 +2,59 @@ package controllers;
 
 import controllers.interfaces.IRoomController;
 import models.Room;
-import repositories.interfaces.IRoomRepository;
+import services.RoomService;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.time.LocalDate;
+import java.util.List;
 
 public class RoomController implements IRoomController {
-    private final IRoomRepository repo;
+    private final RoomService roomService;
 
-    public RoomController(IRoomRepository repo) {
-        this.repo = repo;
+    public RoomController(RoomService roomService) {
+        this.roomService = roomService;
     }
 
     @Override
     public String addRoom(int roomNumber, String roomType, double price) {
-        return repo.createRoom(new Room(roomNumber, roomType, price))
-                ? "Room was added successfully."
-                : "Failed to add the room.";
+        return roomService.addRoom(roomNumber, roomType, price);
     }
 
     @Override
     public String getRoomById(int id) {
-        return Optional.ofNullable(repo.getRoomById(id))
+        return roomService.getRoomById(id)
                 .map(Room::toString)
                 .orElse("Room not found.");
     }
 
     @Override
     public String getAllRooms() {
-        return Optional.ofNullable(repo.getAllRooms())
-                .filter(rooms -> !rooms.isEmpty())
-                .map(rooms -> rooms.stream()
-                        .map(room -> "Room ID: " + room.getId() + ", Room Type: " + room.getRoomType() + ", Price: " + room.getPrice() + " ₸")
-                        .collect(Collectors.joining("\n", "Available rooms:\n", "")))
-                .orElse("No rooms available.");
+        return roomService.getAllRooms();
     }
 
     @Override
     public List<String> getRoomTypes() {
-        return repo.getRoomTypes();
+        return roomService.getRoomTypes();
     }
 
     @Override
     public List<Room> getAvailableRoomsByType(String roomType) {
-        return repo.getAvailableRoomsByType(roomType);
+        return roomService.getAvailableRoomsByType(roomType);
     }
 
     @Override
     public String deleteAllRooms() {
-        return repo.deleteAllRooms()
+        return roomService.deleteAllRooms()
                 ? "All rooms were deleted successfully."
                 : "Failed to delete all rooms.";
     }
+
     @Override
     public boolean updateRoomDetails(int roomId, String roomType, double price) {
-        return repo.updateRoomDetails(roomId, roomType, price);
+        return roomService.updateRoomDetails(roomId, roomType, price);
     }
+
     @Override
     public List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate) {
-        return repo.getAvailableRoomsByTypeAndDate(roomType, checkInDate, checkOutDate);
+        return roomService.getAvailableRoomsByTypeAndDate(roomType, checkInDate, checkOutDate);
     }
 }
