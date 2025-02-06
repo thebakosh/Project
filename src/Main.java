@@ -4,12 +4,14 @@ import data.PostgresDB;
 import data.interfaces.IDB;
 import repositories.*;
 import repositories.interfaces.*;
+import services.*;
+
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
-        IDB db = new PostgresDB("jdbc:postgresql://localhost:5432", "postgres", "0000", "hotel_management");
+        IDB db = PostgresDB.getInstance("jdbc:postgresql://localhost:5432", "postgres", "0000", "hotel_management");
 
 
         IGuestRepository guestRepository = new GuestRepository(db);
@@ -17,11 +19,15 @@ public class Main {
         IBookingRepository bookingRepository = new BookingRepository(db);
         IPaymentRepository paymentRepository = new PaymentRepository(db);
 
+        BookingService bookingService = new BookingService(bookingRepository);
+        GuestService guestService = new GuestService(guestRepository);
+        RoomService roomService = new RoomService(roomRepository);
+        PaymentService paymentService = new PaymentService(paymentRepository);
 
-        IGuestController guestController = new GuestController(guestRepository);
-        IRoomController roomController = new RoomController(roomRepository);
-        IBookingController bookingController = new BookingController(bookingRepository);
-        IPaymentController paymentController = new PaymentController(paymentRepository);
+        IGuestController guestController = new GuestController(guestService);
+        IRoomController roomController = new RoomController(roomService);
+        IBookingController bookingController = new BookingController(bookingService);
+        IPaymentController paymentController = new PaymentController(paymentService);
 
 
         Scanner scanner = new Scanner(System.in);
@@ -33,6 +39,7 @@ public class Main {
             String username = scanner.next();
             System.out.print("Enter password: ");
             String password = scanner.next();
+
 
             if (username.equals("admin") && password.equals("admin")) {
                 currentUser = new User("admin", "Admin");
