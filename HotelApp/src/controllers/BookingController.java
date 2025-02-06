@@ -41,18 +41,14 @@ public class BookingController implements IBookingController {
         return response.toString();
     }
     @Override
-    public String getTotalIncomeForDate(LocalDate date) {
-        double income = bookingRepository.getTotalIncomeForDate(date);
-        return "Total income for " + date + ": " + income + " ₸";
-    }
-
-    @Override
     public String deleteAllBookings() {
         boolean deleted = bookingRepository.deleteAllBookings();
         return deleted ? "All bookings were deleted successfully." : "Failed to delete all bookings.";
     }
-
-
+    @Override
+    public String getBookingDetailsById(int bookingId) {
+        return bookingRepository.getBookingDetailsById(bookingId);
+    }
 
 }
 

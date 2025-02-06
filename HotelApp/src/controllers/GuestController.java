@@ -62,5 +62,4 @@ public class GuestController implements IGuestController {
         boolean deleted = repo.deleteAllGuests();
         return deleted ? "All guests were deleted successfully." : "Failed to delete all guests.";
     }
-
 }

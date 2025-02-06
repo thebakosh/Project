@@ -5,6 +5,7 @@ import models.Payment;
 import repositories.interfaces.IPaymentRepository;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class PaymentController implements IPaymentController {
@@ -46,5 +47,9 @@ public class PaymentController implements IPaymentController {
         return deleted ? "All payments were deleted successfully." : "Failed to delete all payments.";
     }
 
+    @Override
+    public String getTotalIncomeForDate(LocalDate date) {
+        double income = paymentRepository.getTotalIncomeForDate(date);
+        return "Total income for " + date + ": " + income + " ₸";
+    }
 }
-
