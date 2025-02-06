@@ -15,7 +15,8 @@ public class HotelApplication {
     private User currentUser = null;
 
     public HotelApplication(IGuestController guestController, IRoomController roomController,
-                            IBookingController bookingController, IPaymentController paymentController) {
+                            IBookingController bookingController, IPaymentController paymentController,
+                            User currentUser) {
         this.guestController = guestController;
         this.roomController = roomController;
         this.bookingController = bookingController;
