@@ -7,6 +7,7 @@ import repositories.interfaces.IRoomRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
 
 public class RoomController implements IRoomController {
     private final IRoomRepository repo;
@@ -54,5 +55,13 @@ public class RoomController implements IRoomController {
         return repo.deleteAllRooms()
                 ? "All rooms were deleted successfully."
                 : "Failed to delete all rooms.";
+    }
+    @Override
+    public boolean updateRoomDetails(int roomId, String roomType, double price) {
+        return repo.updateRoomDetails(roomId, roomType, price);
+    }
+    @Override
+    public List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate) {
+        return repo.getAvailableRoomsByTypeAndDate(roomType, checkInDate, checkOutDate);
     }
 }

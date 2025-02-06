@@ -1,7 +1,7 @@
 package repositories.interfaces;
 
 import models.Room;
-
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IRoomRepository {
@@ -9,9 +9,13 @@ public interface IRoomRepository {
     Room getRoomById(int id);
     List<Room> getAllRooms();
     boolean deleteAllRooms();
-    void resetRoomIdSequence();
     List<String> getRoomTypes();
     List<Room> getAvailableRoomsByType(String roomType);
+    List<Room> getAvailableRoomsByTypeAndDate(String roomType, LocalDate checkInDate, LocalDate checkOutDate);
 
+    void resetRoomIdSequence();
+
+    boolean updateRoomDetails(int roomId, String roomType, double price);
 }
+
 

@@ -13,3 +13,4 @@ IGuestRepository {
     void resetGuestIdSequence();
 
 }
+
