@@ -39,7 +39,6 @@ public class GuestRepository implements IGuestRepository {
         return false;
     }
 
-
     @Override
     public Guest getGuestById(int id) {
         String sql = "SELECT * FROM guests WHERE id = ?";
@@ -86,6 +85,7 @@ public class GuestRepository implements IGuestRepository {
         }
         return guests;
     }
+
     @Override
     public boolean deleteAllGuests() {
         String deleteSql = "DELETE FROM guests";
@@ -113,7 +113,37 @@ public class GuestRepository implements IGuestRepository {
         }
     }
 
+    @Override
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE email = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
 
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isPhoneNumberExists(String phoneNumber) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE phone_number = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
+
+            st.setString(1, phoneNumber);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
+    }
 }
-
-
