@@ -5,7 +5,6 @@ import models.Booking;
 import repositories.interfaces.IBookingRepository;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +164,21 @@ public class BookingRepository implements IBookingRepository {
             System.out.println("SQL error: " + e.getMessage());
         }
         return "Booking not found.";
+    }
+    @Override
+    public boolean isBookingExists(int bookingId) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, bookingId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
     }
 }
 

@@ -146,4 +146,19 @@ public class GuestRepository implements IGuestRepository {
         }
         return false;
     }
+    @Override
+    public boolean isGuestExists(int guestId) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE id = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, guestId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
+    }
 }

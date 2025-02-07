@@ -70,7 +70,6 @@ public class PaymentRepository implements IPaymentRepository {
             stmt.setDate(3, payment.getPaymentDate());
 
             stmt.executeUpdate();
-            System.out.println("Payment successfully added.");
             return true;
         } catch (SQLException e) {
             System.out.println("SQL error while creating payment: " + e.getMessage());
