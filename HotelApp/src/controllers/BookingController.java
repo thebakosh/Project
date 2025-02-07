@@ -41,4 +41,8 @@ public class BookingController implements IBookingController {
     public String getBookingDetailsById(int bookingId) {
         return bookingService.getBookingDetailsById(bookingId);
     }
+    @Override
+    public boolean isBookingExists(int bookingId) {
+        return bookingService.isBookingExists(bookingId);
+    }
 }

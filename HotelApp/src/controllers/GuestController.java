@@ -37,4 +37,9 @@ public class GuestController implements IGuestController {
                 ? "All guests were deleted successfully."
                 : "Failed to delete all guests.";
     }
+    @Override
+    public boolean isGuestExists(int guestId) {
+        return guestService.isGuestExists(guestId);
+    }
+
 }
