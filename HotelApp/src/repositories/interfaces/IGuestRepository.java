@@ -12,5 +12,6 @@ public interface IGuestRepository {
     void resetGuestIdSequence();
     boolean isEmailExists(String email);
     boolean isPhoneNumberExists(String phoneNumber);
+    boolean isGuestExists(int guestId);
 }
 

@@ -1,8 +1,6 @@
 package repositories.interfaces;
 
 import models.Booking;
-
-import java.time.LocalDate;
 import java.util.List;
 
 public interface IBookingRepository {
@@ -12,4 +10,6 @@ public interface IBookingRepository {
     void resetBookingIdSequence();
     boolean deleteAllBookings();
     String getBookingDetailsById(int bookingId);
+    boolean isBookingExists(int bookingId);
 }
+
