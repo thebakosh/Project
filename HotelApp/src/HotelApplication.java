@@ -1,5 +1,4 @@
 import controllers.interfaces.*;
-
 import java.time.LocalDate;
 import java.util.InputMismatchException;
 import java.util.List;
@@ -23,7 +22,6 @@ public class HotelApplication {
         this.paymentController = paymentController;
         this.currentUser = currentUser;
     }
-
 
     private void mainMenu() {
         System.out.println();
@@ -297,9 +295,17 @@ public class HotelApplication {
 
 
     private void addBooking() {
-        System.out.print("Enter guest ID: ");
-        int guestId = scanner.nextInt();
+        int guestId;
+        while (true) {
+            System.out.print("Enter guest ID: ");
+            guestId = scanner.nextInt();
 
+            if (guestController.isGuestExists(guestId)) {
+                break;
+            } else {
+                System.out.println("Invalid guest ID! Please enter a valid guest ID.");
+            }
+        }
         LocalDate checkInDate;
         while (true) {
             System.out.print("Enter check-in date (YYYY-MM-DD): ");
@@ -366,13 +372,34 @@ public class HotelApplication {
     }
 
     private void addPayment() {
-        System.out.print("Enter booking ID: ");
-        int bookingId = scanner.nextInt();
+        int bookingId;
+        while (true) {
+            System.out.print("Enter booking ID: ");
+            bookingId = scanner.nextInt();
+
+            if (bookingController.isBookingExists(bookingId)) {
+                break;
+            } else {
+                System.out.println("Invalid booking ID! Please enter a valid booking ID.");
+            }
+        }
         System.out.print("Enter payment amount: ");
         double paymentAmount = scanner.nextDouble();
-        System.out.print("Enter payment date (YYYY-MM-DD): ");
-        String paymentDate = scanner.next();
-        System.out.println(paymentController.addPayment(bookingId, paymentAmount, paymentDate));
+
+        LocalDate paymentDate;
+        while (true) {
+            System.out.print("Enter payment date (YYYY-MM-DD): ");
+            String paymentDateStr = scanner.next();
+
+            try {
+                paymentDate = LocalDate.parse(paymentDateStr);
+                break;
+            } catch (Exception e) {
+                System.out.println("Invalid date format! Please enter the date in YYYY-MM-DD format.");
+            }
+        }
+
+        System.out.println(paymentController.addPayment(bookingId, paymentAmount, paymentDate.toString()));
     }
 
     private void deleteAllGuests() {
