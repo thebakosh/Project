@@ -2,6 +2,7 @@ package repositories;
 
 import data.interfaces.IDB;
 import models.Payment;
+import factories. *;
 import repositories.interfaces.IPaymentRepository;
 
 import java.sql.*;
@@ -99,14 +100,13 @@ public class PaymentRepository implements IPaymentRepository {
     @Override
     public Payment getPaymentById(int id) {
         String sql = "SELECT * FROM payments WHERE id = ?";
-
         try (Connection connection = db.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Payment(
+                return PaymentFactory.createPaymentWithId(
                         rs.getInt("id"),
                         rs.getInt("booking_id"),
                         rs.getDouble("payment_amount"),
@@ -119,23 +119,22 @@ public class PaymentRepository implements IPaymentRepository {
         return null;
     }
 
+
+
     @Override
     public List<Payment> getAllPayments() {
         List<Payment> payments = new ArrayList<>();
         String sql = "SELECT * FROM payments";
-
         try (Connection connection = db.getConnection();
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-
             while (rs.next()) {
-                Payment payment = new Payment(
+                payments.add(PaymentFactory.createPaymentWithId(
                         rs.getInt("id"),
                         rs.getInt("booking_id"),
                         rs.getDouble("payment_amount"),
                         rs.getDate("payment_date")
-                );
-                payments.add(payment);
+                ));
             }
         } catch (SQLException e) {
             System.out.println("SQL error while fetching all payments: " + e.getMessage());

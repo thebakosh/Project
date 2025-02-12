@@ -1,66 +1,39 @@
 package models;
 
 public class Guest {
-    private int id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String phoneNumber;
+    private final int id;
+    private final String firstName;
+    private final String lastName;
+    private final String email;
+    private final String phoneNumber;
 
-    public Guest(){
-
+    private Guest(Builder builder) {
+        this.id = builder.id;
+        this.firstName = builder.firstName;
+        this.lastName = builder.lastName;
+        this.email = builder.email;
+        this.phoneNumber = builder.phoneNumber;
     }
 
-    public Guest(String firstName, String lastName, String email, String phoneNumber) {
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setPhoneNumber(phoneNumber);
-    }
-
-    public Guest(int id, String firstName, String lastName, String email, String phoneNumber) {
-        this(firstName, lastName, email, phoneNumber);
-        setId(id);
-    }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
     public String getLastName() {
         return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     @Override
@@ -69,9 +42,45 @@ public class Guest {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", email=" + email +
-                ", phoneNumber=" + phoneNumber +
+                ", email='" + email + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }
-}
 
+    public static class Builder {
+        private int id;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String phoneNumber;
+
+        public Builder setId(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder setFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public Builder setLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public Builder setEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public Guest build() {
+            return new Guest(this);
+        }
+    }
+}

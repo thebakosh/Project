@@ -2,7 +2,7 @@ package services;
 
 import models.Room;
 import repositories.interfaces.IRoomRepository;
-
+import factories. *;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -15,11 +15,14 @@ public class RoomService {
         this.repo = repo;
     }
 
+
     public String addRoom(int roomNumber, String roomType, double price) {
         if (price <= 0) {
             return "Invalid room price.";
         }
-        Room room = new Room(roomNumber, roomType, price);
+
+        Room room = RoomFactory.createNewRoom(roomNumber, roomType, price);
+
         return repo.createRoom(room) ? "Room was added successfully." : "Failed to add the room.";
     }
 

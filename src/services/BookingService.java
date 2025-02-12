@@ -1,5 +1,6 @@
 package services;
 
+import factories. *;
 import models.Booking;
 import repositories.interfaces.IBookingRepository;
 
@@ -15,7 +16,12 @@ public class BookingService {
     }
 
     public boolean addBooking(int guestId, int roomId, String checkInDate, String checkOutDate) {
-        Booking booking = new Booking(guestId, roomId, Date.valueOf(checkInDate), Date.valueOf(checkOutDate));
+        Booking booking = BookingFactory.createNewBooking(
+                guestId,
+                roomId,
+                Date.valueOf(checkInDate),
+                Date.valueOf(checkOutDate)
+        );
         return bookingRepository.createBooking(booking);
     }
 

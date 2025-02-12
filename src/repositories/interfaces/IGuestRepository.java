@@ -10,5 +10,7 @@ public interface IGuestRepository {
     List<Guest> getAllGuests();
     boolean deleteAllGuests();
     void resetGuestIdSequence();
+    boolean isPhoneNumberExists(String phoneNumber);
+    boolean isEmailExists(String email);
 }
 

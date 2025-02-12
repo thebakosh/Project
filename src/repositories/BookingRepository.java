@@ -2,6 +2,7 @@ package repositories;
 
 import data.interfaces.IDB;
 import models.Booking;
+import factories. *;
 import repositories.interfaces.IBookingRepository;
 
 import java.sql.*;
@@ -38,23 +39,22 @@ public class BookingRepository implements IBookingRepository {
         try (Connection connection = db.getConnection();
              PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setInt(1, id);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return new Booking(
-                            rs.getInt("id"),
-                            rs.getInt("guest_id"),
-                            rs.getInt("room_id"),
-                            rs.getDate("check_in_date"),
-                            rs.getDate("check_out_date")
-                    );
-                }
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return BookingFactory.createBookingWithId(
+                        rs.getInt("id"),
+                        rs.getInt("guest_id"),
+                        rs.getInt("room_id"),
+                        rs.getDate("check_in_date"),
+                        rs.getDate("check_out_date")
+                );
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return null;
     }
+
 
     @Override
     public List<Booking> getAllBookings() {
@@ -64,20 +64,21 @@ public class BookingRepository implements IBookingRepository {
              Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-                Booking booking = new Booking(
+                bookings.add(BookingFactory.createBookingWithId(
                         rs.getInt("id"),
                         rs.getInt("guest_id"),
                         rs.getInt("room_id"),
                         rs.getDate("check_in_date"),
                         rs.getDate("check_out_date")
-                );
-                bookings.add(booking);
+                ));
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return bookings;
     }
+
+
     @Override
     public boolean deleteAllBookings() {
         String deleteSql = "DELETE FROM bookings";

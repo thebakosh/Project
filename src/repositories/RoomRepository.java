@@ -3,7 +3,7 @@ package repositories;
 import data.interfaces.IDB;
 import models.Room;
 import repositories.interfaces.IRoomRepository;
-
+import factories. *;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,22 +38,22 @@ public class RoomRepository implements IRoomRepository {
         try (Connection connection = db.getConnection();
              PreparedStatement st = connection.prepareStatement(sql)) {
             st.setInt(1, id);
-
-            try (ResultSet rs = st.executeQuery()) {
-                if (rs.next()) {
-                    return new Room(
-                            rs.getInt("id"),
-                            rs.getInt("room_number"),
-                            rs.getString("room_type"),
-                            rs.getDouble("price")
-                    );
-                }
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return RoomFactory.createRoomWithId(
+                        rs.getInt("id"),
+                        rs.getInt("room_number"),
+                        rs.getString("room_type"),
+                        rs.getDouble("price")
+                );
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return null;
     }
+
+
 
     @Override
     public List<Room> getAllRooms() {
@@ -63,19 +63,20 @@ public class RoomRepository implements IRoomRepository {
              Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
-                Room room = new Room(
+                rooms.add(RoomFactory.createRoomWithId(
                         rs.getInt("id"),
                         rs.getInt("room_number"),
                         rs.getString("room_type"),
                         rs.getDouble("price")
-                );
-                rooms.add(room);
+                ));
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return rooms;
     }
+
+
 
     @Override
     public boolean deleteAllRooms() {
@@ -114,17 +115,20 @@ public class RoomRepository implements IRoomRepository {
         String sql = "SELECT * FROM rooms WHERE room_type = ? AND id NOT IN " +
                 "(SELECT room_id FROM bookings WHERE CURRENT_DATE BETWEEN check_in_date AND check_out_date)";
         List<Room> availableRooms = new ArrayList<>();
+
         try (Connection connection = db.getConnection();
              PreparedStatement st = connection.prepareStatement(sql)) {
             st.setString(1, roomType);
             ResultSet rs = st.executeQuery();
+
             while (rs.next()) {
-                Room room = new Room(
-                        rs.getInt("id"),
-                        rs.getInt("room_number"),
-                        rs.getString("room_type"),
-                        rs.getDouble("price")
-                );
+                Room room = new Room.Builder()
+                        .setId(rs.getInt("id"))
+                        .setRoomNumber(rs.getInt("room_number"))
+                        .setRoomType(rs.getString("room_type"))
+                        .setPrice(rs.getDouble("price"))
+                        .build();
+
                 availableRooms.add(room);
             }
         } catch (SQLException e) {
@@ -132,6 +136,7 @@ public class RoomRepository implements IRoomRepository {
         }
         return availableRooms;
     }
+
 
     @Override
     public void resetRoomIdSequence() {
@@ -180,17 +185,18 @@ public class RoomRepository implements IRoomRepository {
 
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                availableRooms.add(new Room(
-                        rs.getInt("id"),
-                        rs.getInt("room_number"),
-                        rs.getString("room_type"),
-                        rs.getDouble("price")
-                ));
+                Room room = new Room.Builder()
+                        .setId(rs.getInt("id"))
+                        .setRoomNumber(rs.getInt("room_number"))
+                        .setRoomType(rs.getString("room_type"))
+                        .setPrice(rs.getDouble("price"))
+                        .build();
+
+                availableRooms.add(room);
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return availableRooms;
     }
-
 }

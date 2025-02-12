@@ -2,7 +2,7 @@ package services;
 
 import models.Payment;
 import repositories.interfaces.IPaymentRepository;
-
+import factories. *;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
@@ -21,11 +21,16 @@ public class PaymentService {
             return "Invalid payment amount.";
         }
 
-        Payment payment = new Payment(bookingId, paymentAmount, Date.valueOf(paymentDate));
-        boolean success = paymentRepository.createPayment(payment);
+        Payment payment = PaymentFactory.createNewPayment(
+                bookingId,
+                paymentAmount,
+                Date.valueOf(paymentDate)
+        );
 
+        boolean success = paymentRepository.createPayment(payment);
         return success ? "Payment was successfully added." : "Failed to add payment.";
     }
+
 
     public Optional<Payment> getPaymentById(int id) {
         return Optional.ofNullable(paymentRepository.getPaymentById(id));

@@ -2,6 +2,7 @@ package repositories;
 
 import data.interfaces.IDB;
 import models.Guest;
+import factories. *;
 import repositories.interfaces.IGuestRepository;
 
 import java.sql.*;
@@ -39,17 +40,15 @@ public class GuestRepository implements IGuestRepository {
         return false;
     }
 
-
     @Override
     public Guest getGuestById(int id) {
         String sql = "SELECT * FROM guests WHERE id = ?";
         try (Connection connection = db.getConnection();
              PreparedStatement st = connection.prepareStatement(sql)) {
-
             st.setInt(1, id);
             ResultSet rs = st.executeQuery();
             if (rs.next()) {
-                return new Guest(
+                return GuestFactory.createGuestWithId(
                         rs.getInt("id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
@@ -65,27 +64,27 @@ public class GuestRepository implements IGuestRepository {
 
     @Override
     public List<Guest> getAllGuests() {
-        String sql = "SELECT id, first_name, last_name, email, phone_number FROM guests";
         List<Guest> guests = new ArrayList<>();
+        String sql = "SELECT id, first_name, last_name, email, phone_number FROM guests";
         try (Connection connection = db.getConnection();
              Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
-                Guest guest = new Guest(
+                guests.add(GuestFactory.createGuestWithId(
                         rs.getInt("id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("email"),
                         rs.getString("phone_number")
-                );
-                guests.add(guest);
+                ));
             }
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
         return guests;
     }
+
     @Override
     public boolean deleteAllGuests() {
         String deleteSql = "DELETE FROM guests";
@@ -111,5 +110,39 @@ public class GuestRepository implements IGuestRepository {
         } catch (SQLException e) {
             System.out.println("SQL error: " + e.getMessage());
         }
+    }
+
+    @Override
+    public boolean isEmailExists(String email) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE email = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
+
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isPhoneNumberExists(String phoneNumber) {
+        String sql = "SELECT COUNT(*) FROM guests WHERE phone_number = ?";
+        try (Connection connection = db.getConnection();
+             PreparedStatement st = connection.prepareStatement(sql)) {
+
+            st.setString(1, phoneNumber);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQL error: " + e.getMessage());
+        }
+        return false;
     }
 }
