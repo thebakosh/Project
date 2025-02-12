@@ -1,6 +1,7 @@
 package services;
 
 import models.Guest;
+import factories. *;
 import repositories.interfaces.IGuestRepository;
 
 import java.util.List;
@@ -44,9 +45,8 @@ public class GuestService {
             phoneNumber = scanner.nextLine();
         }
 
-        Guest guest = new Guest(firstName, lastName, email, phoneNumber);
+        Guest guest = GuestFactory.createNewGuest(firstName, lastName, email, phoneNumber);
         boolean created = repo.createGuest(guest);
-
         return created ? "Guest was created successfully." : "Guest creation failed.";
     }
 
