@@ -10,6 +10,5 @@ public interface IBookingRepository {
     void resetBookingIdSequence();
     boolean deleteAllBookings();
     String getBookingDetailsById(int bookingId);
-    boolean isBookingExists(int bookingId);
 }
 

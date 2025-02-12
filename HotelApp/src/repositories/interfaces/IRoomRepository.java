@@ -17,3 +17,5 @@ public interface IRoomRepository {
 
     boolean updateRoomDetails(int roomId, String roomType, double price);
 }
+
+
