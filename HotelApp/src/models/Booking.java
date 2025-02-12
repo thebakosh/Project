@@ -1,69 +1,25 @@
 package models;
-
 import java.sql.Date;
 
 public class Booking {
-    private int id;
-    private int guestId;
-    private int roomId;
-    private Date checkInDate;
-    private Date checkOutDate;
+    private final int id;
+    private final int guestId;
+    private final int roomId;
+    private final Date checkInDate;
+    private final Date checkOutDate;
 
-    public Booking() {
+    private Booking(Builder builder) {
+        this.id = builder.id;
+        this.guestId = builder.guestId;
+        this.roomId = builder.roomId;
+        this.checkInDate = builder.checkInDate;
+        this.checkOutDate = builder.checkOutDate;
     }
-
-    public Booking(int guestId, int roomId, Date checkInDate, Date checkOutDate) {
-        this.guestId = guestId;
-        this.roomId = roomId;
-        this.checkInDate = checkInDate;
-        this.checkOutDate = checkOutDate;
-    }
-
-    public Booking(int id, int guestId, int roomId, Date checkInDate, Date checkOutDate) {
-        this(guestId, roomId, checkInDate, checkOutDate);
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getGuestId() {
-        return guestId;
-    }
-
-    public void setGuestId(int guestId) {
-        this.guestId = guestId;
-    }
-
-    public int getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
-    }
-
-    public Date getCheckInDate() {
-        return checkInDate;
-    }
-
-    public void setCheckInDate(Date checkInDate) {
-        this.checkInDate = checkInDate;
-    }
-
-    public Date getCheckOutDate() {
-        return checkOutDate;
-    }
-
-    public void setCheckOutDate(Date checkOutDate) {
-        this.checkOutDate = checkOutDate;
-    }
-
+    public int getId() {return id;}
+    public int getGuestId() {return guestId;}
+    public int getRoomId() {return roomId;}
+    public Date getCheckInDate() {return checkInDate;}
+    public Date getCheckOutDate() {return checkOutDate;}
     @Override
     public String toString() {
         return "Booking{" +
@@ -73,5 +29,37 @@ public class Booking {
                 ", checkInDate=" + checkInDate +
                 ", checkOutDate=" + checkOutDate +
                 '}';
+    }
+
+    public static class Builder {
+        private int id;
+        private int guestId;
+        private int roomId;
+        private Date checkInDate;
+        private Date checkOutDate;
+
+        public Builder setId(int id) {
+            this.id = id;
+            return this;
+        }
+        public Builder setGuestId(int guestId) {
+            this.guestId = guestId;
+            return this;
+        }
+        public Builder setRoomId(int roomId) {
+            this.roomId = roomId;
+            return this;
+        }
+        public Builder setCheckInDate(Date checkInDate) {
+            this.checkInDate = checkInDate;
+            return this;
+        }
+        public Builder setCheckOutDate(Date checkOutDate) {
+            this.checkOutDate = checkOutDate;
+            return this;
+        }
+        public Booking build() {
+            return new Booking(this);
+        }
     }
 }
