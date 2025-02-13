@@ -75,4 +75,7 @@ public class GuestService {
         return phoneNumber.matches("^(\\+7|8)(7\\d{2}|3\\d{2})\\d{7}$") ||
                 phoneNumber.matches("^(\\+7|8)\\s?(7\\d{2}|3\\d{2})\\s?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$");
     }
+    public boolean isGuestExists(int guestId) {
+        return repo.isGuestExists(guestId);
+    }
 }

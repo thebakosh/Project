@@ -45,5 +45,8 @@ public class BookingService {
     public String getBookingDetailsById(int bookingId) {
         return bookingRepository.getBookingDetailsById(bookingId);
     }
+    public boolean isBookingExists(int bookingId) {
+        return bookingRepository.isBookingExists(bookingId);
+    }
 }
 
